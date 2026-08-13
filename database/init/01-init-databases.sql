@@ -1,0 +1,11 @@
+-- Create TurtleWoW Databases
+CREATE DATABASE IF NOT EXISTS `tw_logon` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `tw_world` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `tw_char` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `tw_logs` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+GRANT ALL PRIVILEGES ON `tw_logon`.* TO 'root'@'%';
+GRANT ALL PRIVILEGES ON `tw_world`.* TO 'root'@'%';
+GRANT ALL PRIVILEGES ON `tw_char`.* TO 'root'@'%';
+GRANT ALL PRIVILEGES ON `tw_logs`.* TO 'root'@'%';
+FLUSH PRIVILEGES;

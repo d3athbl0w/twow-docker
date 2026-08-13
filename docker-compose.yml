@@ -1,0 +1,89 @@
+name: turtlewow
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: turtlewow-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-mangos}
+      MARIADB_DATABASE: tw_logon
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ../TurtleWoW 1172/sql:/docker-entrypoint-initdb.d/source_sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+      - turtle-network
+
+  authserver:
+    build:
+      context: ../patch_1172
+      dockerfile: ../path_1172_docker/Dockerfile.server
+    container_name: turtlewow-authserver
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "${AUTH_PORT:-3724}:3724"
+    volumes:
+      - ./config/realmd.conf:/app/etc/realmd.conf:ro
+      - ./scripts/entrypoint-auth.sh:/app/scripts/entrypoint-auth.sh:ro
+      - ./logs:/app/logs
+    entrypoint: ["/bin/bash", "/app/scripts/entrypoint-auth.sh"]
+    networks:
+      - turtle-network
+
+  worldserver:
+    build:
+      context: ../patch_1172
+      dockerfile: ../path_1172_docker/Dockerfile.server
+    container_name: turtlewow-worldserver
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "${WORLD_PORT:-8091}:8091"
+    volumes:
+      - ../TurtleWoW 1172/data:/app/data:ro
+      - ../patch_1172/sql:/app/sql:ro
+      - ./config/mangosd.conf:/app/etc/mangosd.conf:ro
+      - ./config/anticheat.conf:/app/etc/anticheat.conf:ro
+      - ./scripts/entrypoint-world.sh:/app/scripts/entrypoint-world.sh:ro
+      - ./logs:/app/logs
+    entrypoint: ["/bin/bash", "/app/scripts/entrypoint-world.sh"]
+    networks:
+      - turtle-network
+
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    container_name: turtlewow-builder
+    profiles: ["dev"]
+    volumes:
+      - ../patch_1172:/src
+      - build_cache:/src/build
+      - ./scripts:/app/scripts:ro
+    entrypoint: ["/bin/bash", "/app/scripts/rebuild.sh"]
+    networks:
+      - turtle-network
+
+volumes:
+  mariadb_data:
+    name: turtlewow_mariadb_data
+  build_cache:
+    name: turtlewow_build_cache
+
+networks:
+  turtle-network:
+    name: turtle-network
+    driver: bridge

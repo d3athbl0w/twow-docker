@@ -1,0 +1,7 @@
+.env
+logs/*.log
+logs/*.txt
+logs/realmd.log
+logs/mangosd.log
+logs/dbupdates.log
+database/data/
