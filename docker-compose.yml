@@ -18,7 +18,8 @@ services:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
-      retries: 30
+      retries: 20
+      start_period: 300s
     networks:
       - turtle-network
 
@@ -54,7 +55,7 @@ services:
       - "${WORLD_PORT:-8091}:8091"
     volumes:
       - ../TurtleWoW 1172/data:/app/data:ro
-      - ../patch_1172/sql:/app/sql:ro
+      - ../patch_1172/sql:/app/sql
       - ./config/mangosd.conf:/app/etc/mangosd.conf:ro
       - ./config/anticheat.conf:/app/etc/anticheat.conf:ro
       - ./scripts/entrypoint-world.sh:/app/scripts/entrypoint-world.sh:ro

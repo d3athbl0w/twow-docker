@@ -4,8 +4,8 @@ set -e
 echo "=== Starting TurtleWoW World Server (mangosd) ==="
 cd /app
 
-# Ensure logs and honor folders exist
-mkdir -p /app/logs /app/honor
+# Ensure logs, honor, and sql/unused folders exist
+mkdir -p /app/logs /app/honor /app/sql/unused
 
 # Wait for MariaDB to be reachable on port 3306
 echo "[WorldServer] Waiting for MariaDB at mariadb:3306..."
