@@ -2,7 +2,7 @@
 set -e
 
 echo "[Docker Init] Initializing tw_logon database structure..."
-mysql -u root -p"${MARIADB_ROOT_PASSWORD}" tw_logon < /docker-entrypoint-initdb.d/source_sql/_structure_logon.sql
+mysql -u root -p"${MARIADB_ROOT_PASSWORD}" tw_logon < /source_sql/_structure_logon.sql
 
 echo "[Docker Init] Configuring default realmlist entry in tw_logon..."
 mysql -u root -p"${MARIADB_ROOT_PASSWORD}" tw_logon -e "

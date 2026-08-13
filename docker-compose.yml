@@ -13,7 +13,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./database/init:/docker-entrypoint-initdb.d:ro
-      - ../TurtleWoW 1172/sql:/docker-entrypoint-initdb.d/source_sql:ro
+      - ../TurtleWoW 1172/sql:/source_sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
