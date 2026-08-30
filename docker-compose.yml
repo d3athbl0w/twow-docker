@@ -13,7 +13,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./database/init:/docker-entrypoint-initdb.d:ro
-      - ../TurtleWoW 1172/sql:/source_sql:ro
+      - ${SQL_PATH:-./database/sql}:/source_sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -25,8 +25,11 @@ services:
 
   authserver:
     build:
-      context: ../patch_1172
-      dockerfile: ../path_1172_docker/Dockerfile.server
+      context: .
+      dockerfile: Dockerfile.server
+      args:
+        GIT_REPO: ${GIT_REPO:-https://github.com/d3athbl0w/twow-1172.git}
+        GIT_BRANCH: ${GIT_BRANCH:-master}
     container_name: turtlewow-authserver
     restart: unless-stopped
     tty: true
@@ -46,8 +49,11 @@ services:
 
   worldserver:
     build:
-      context: ../patch_1172
-      dockerfile: ../path_1172_docker/Dockerfile.server
+      context: .
+      dockerfile: Dockerfile.server
+      args:
+        GIT_REPO: ${GIT_REPO:-https://github.com/d3athbl0w/twow-1172.git}
+        GIT_BRANCH: ${GIT_BRANCH:-master}
     container_name: turtlewow-worldserver
     restart: unless-stopped
     tty: true
@@ -58,8 +64,7 @@ services:
     ports:
       - "${WORLD_PORT:-8091}:8091"
     volumes:
-      - ../TurtleWoW 1172/data:/app/data:ro
-      - ../patch_1172/sql:/app/sql
+      - ${DATA_PATH:-./data}:/app/data:ro
       - ./config/mangosd.conf:/app/etc/mangosd.conf:ro
       - ./config/anticheat.conf:/app/etc/anticheat.conf:ro
       - ./scripts/entrypoint-world.sh:/app/scripts/entrypoint-world.sh:ro
@@ -75,7 +80,7 @@ services:
     container_name: turtlewow-builder
     profiles: ["dev"]
     volumes:
-      - ../patch_1172:/src
+      - ${SOURCE_PATH:-../patch_1172}:/src
       - build_cache:/src/build
       - ./scripts:/app/scripts:ro
     entrypoint: ["/bin/bash", "/app/scripts/rebuild.sh"]

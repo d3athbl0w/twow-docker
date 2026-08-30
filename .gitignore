@@ -1,7 +1,11 @@
 .env
 logs/*.log
 logs/*.txt
+logs/*.sql
 logs/realmd.log
 logs/mangosd.log
 logs/dbupdates.log
 database/data/
+database/sql/tw_world.sql
+data/
+data.zip

@@ -22,7 +22,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
-COPY . .
+
+ARG GIT_REPO="https://github.com/d3athbl0w/twow-1172.git"
+ARG GIT_BRANCH="master"
+
+# Copy local build context to inspect if source is provided locally
+COPY . /tmp/context/
+RUN if [ -n "$GIT_REPO" ]; then \
+        echo "Cloning source repository from ${GIT_REPO} (${GIT_BRANCH})..." && \
+        git clone --depth 1 -b "${GIT_BRANCH}" "${GIT_REPO}" /src ; \
+    elif [ -f /tmp/context/CMakeLists.txt ]; then \
+        echo "Using local source from build context..." && \
+        cp -a /tmp/context/. /src/ ; \
+    else \
+        echo "ERROR: No GIT_REPO provided and build context does not contain CMakeLists.txt" && exit 1 ; \
+    fi && \
+    rm -rf /tmp/context
 
 RUN mkdir -p build && cd build && \
     cmake .. \
@@ -34,6 +49,9 @@ RUN mkdir -p build && cd build && \
         -DCMAKE_INSTALL_PREFIX=/app && \
     make -j$(nproc) && \
     make install
+
+# Copy SQL directory into build artifact for database updates & migrations
+RUN if [ -d /src/sql ]; then cp -r /src/sql /app/sql; fi
 
 # -----------------------------------------------------------------------------
 # Stage 2: Runtime Stage
@@ -49,14 +67,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g \
     netcat \
     ca-certificates \
+    curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY --from=builder /app /app
 
-RUN mkdir -p /app/etc /app/logs /app/data /app/scripts /app/honor
+RUN mkdir -p /app/etc /app/logs /app/data /app/scripts /app/honor /app/sql/unused
 
 EXPOSE 3724 8091
 
 CMD ["/bin/bash"]
+
