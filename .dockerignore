@@ -1,0 +1,12 @@
+﻿.git
+.env
+data
+data/**
+data.zip
+database/sql/tw_world.sql
+logs
+logs/**
+build
+build/**
+bin
+bin/**
