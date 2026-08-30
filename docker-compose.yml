@@ -43,7 +43,7 @@ services:
       - ./config/realmd.conf:/app/etc/realmd.conf:ro
       - ./scripts/entrypoint-auth.sh:/app/scripts/entrypoint-auth.sh:ro
       - ./logs:/app/logs
-    entrypoint: ["/bin/bash", "/app/scripts/entrypoint-auth.sh"]
+    entrypoint: ["/bin/bash", "-c", "tr -d '\\r' < /app/scripts/entrypoint-auth.sh > /tmp/entrypoint.sh && exec /bin/bash /tmp/entrypoint.sh"]
     networks:
       - turtle-network
 
@@ -69,7 +69,7 @@ services:
       - ./config/anticheat.conf:/app/etc/anticheat.conf:ro
       - ./scripts/entrypoint-world.sh:/app/scripts/entrypoint-world.sh:ro
       - ./logs:/app/logs
-    entrypoint: ["/bin/bash", "/app/scripts/entrypoint-world.sh"]
+    entrypoint: ["/bin/bash", "-c", "tr -d '\\r' < /app/scripts/entrypoint-world.sh > /tmp/entrypoint.sh && exec /bin/bash /tmp/entrypoint.sh"]
     networks:
       - turtle-network
 

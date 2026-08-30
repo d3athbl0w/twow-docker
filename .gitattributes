@@ -1,0 +1,6 @@
+﻿# Force LF on shell scripts and sql files across all operating systems
+*.sh text eol=lf
+*.sql text eol=lf
+*.conf text eol=lf
+*.env* text eol=lf
+Dockerfile* text eol=lf

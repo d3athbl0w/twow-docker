@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # scripts/build.sh
 # Automated build & setup script for TurtleWoW 1.17.2 Docker environment
 
